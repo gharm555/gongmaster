@@ -4,6 +4,31 @@ export interface SimpleVocab {
   meaning: string;
 }
 
+export const getDayRange = (day: number) => {
+  let start = 0;
+  let count = 0;
+  
+  // Day 1 ~ 40: 50 words each
+  if (day <= 40) {
+    start = (day - 1) * 50;
+    count = 50;
+  } 
+  // Day 41 ~ 50: 36 words each
+  else {
+    // First 40 days * 50 = 2000 words
+    // (day - 41) * 36 for the remaining
+    start = 2000 + (day - 41) * 36;
+    count = 36;
+  }
+  
+  // Ensure we don't go out of bounds (just in case)
+  const totalLength = customVocabList.length;
+  if (start >= totalLength) start = totalLength - 1;
+  const end = Math.min(start + count, totalLength);
+  
+  return { start, end, count: end - start };
+};
+
 export const customVocabList: SimpleVocab[] = [
   { word: "acid", meaning: "산(酸)의" },
   { word: "acquisition", meaning: "습득; 취득(한 것)" },

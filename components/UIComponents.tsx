@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Loader2, ChevronLeft } from 'lucide-react';
 
@@ -49,7 +50,7 @@ export const Card: React.FC<{ children: React.ReactNode; className?: string; onC
 
 // --- Header/Nav Bar ---
 export const TopBar: React.FC<{ title: string; onBack?: () => void }> = ({ title, onBack }) => (
-  <div className="sticky top-0 z-10 bg-white/80 backdrop-blur-md border-b border-slate-200 px-4 h-14 flex items-center justify-between">
+  <div className="sticky top-0 z-20 bg-white/80 backdrop-blur-md border-b border-slate-200 px-4 h-14 flex items-center justify-between">
     <div className="flex items-center gap-2">
       {onBack && (
         <button onClick={onBack} className="p-1 -ml-2 rounded-full hover:bg-slate-100">

@@ -1,7 +1,7 @@
 
 import { GoogleGenAI, Type, Schema } from "@google/genai";
 import { VocabItem, GrammarQuestion } from "../types";
-import { customVocabList } from "../data/vocabData";
+import { customVocabList, SimpleVocab } from "../data/vocabData";
 
 // Initialize Gemini Client
 // Note: API Key must be provided via environment variable process.env.API_KEY
@@ -15,7 +15,7 @@ const getRandomItems = <T>(array: T[], count: number): T[] => {
   return shuffled.slice(0, count);
 };
 
-export const generateDailyVocab = async (count: number = 5, topic?: string): Promise<VocabItem[]> => {
+export const generateDailyVocab = async (count: number = 5, topic?: string, specificWords?: SimpleVocab[]): Promise<VocabItem[]> => {
   const schema: Schema = {
     type: Type.ARRAY,
     items: {
@@ -38,8 +38,17 @@ export const generateDailyVocab = async (count: number = 5, topic?: string): Pro
 
   let prompt = "";
 
-  if (topic === '내 단어장' || topic === 'Custom') {
-    // Pick random words from the custom list
+  // 1. If specific words are provided (Sequential Mode)
+  if (specificWords && specificWords.length > 0) {
+    const wordListString = specificWords.map(w => `${w.word} (meaning: ${w.meaning})`).join(", ");
+    prompt = `Create detailed vocabulary study cards for exactly these ${specificWords.length} words: 
+    ${wordListString}.
+    Use the provided Korean meanings as the primary definition.
+    Generate a phonetic pronunciation, a helpful example sentence, the Korean translation of that sentence, and synonyms for each word.
+    Strictly maintain the order of the words provided.`;
+  } 
+  // 2. Random selection from Custom List
+  else if (topic === '내 단어장' || topic === 'Custom') {
     const selectedWords = getRandomItems(customVocabList, count);
     const wordListString = selectedWords.map(w => `${w.word} (meaning: ${w.meaning})`).join(", ");
     
@@ -47,7 +56,9 @@ export const generateDailyVocab = async (count: number = 5, topic?: string): Pro
     ${wordListString}.
     Use the provided Korean meanings as the primary definition.
     Generate a phonetic pronunciation, a helpful example sentence, the Korean translation of that sentence, and synonyms for each word.`;
-  } else {
+  } 
+  // 3. Topic-based Random Generation
+  else {
     const topicInstruction = topic && topic !== '전체' 
       ? `Focus strictly on vocabulary related to the category: "${topic}".` 
       : "Include a mix of high-frequency words from reading comprehension, synonyms, and idioms.";
